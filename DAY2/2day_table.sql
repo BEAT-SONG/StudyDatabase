@@ -298,12 +298,81 @@ From prod;
 Select CONCAT(CONCAT(mem_name, '님 은'), TO_CHAR(mem_bir,'YYYY'))
 From member;
 
-Select mem_name || '님은'|| TO_CHAR(mem_bir,'YYYY') || '년 ' || TO_CHAR(mem_bir,'D') ||'월 출생이고 태어난 요일은 ' ||  TO_CHAR(mem_bir, 'day') 몰까
+Select (mem_name || '님은' || 
+        TO_CHAR(mem_bir,'YYYY') || '년 ' || 
+        TO_CHAR(mem_bir,'D') ||'월 출생이고 태어난 요일은 ' ||  
+        TO_CHAR(mem_bir, 'day') || '입니다.'
+        ) as sumStr
 From member;
 
+-- 숫자
+-- 9는 유효한 숫자, 0은 무효한 숫자 = 의미없는 자리수
+-- $, L = 달러 및 지역 화폐 기호
+-- MI = 음수인 경우 우측에 마이너스 표시, 우측에 표시
+-- PR = 음수인 경우 "<>"괄호로 묶는다. 우측에 표시
+-- X = 해당 숫자를 16진수로 표현
+Select TO_CHAR(1234.6, '999,999.00')
+From dual;
+
+Select TO_CHAR(-1234.6, 'L999,999.00PR')
+From dual;
+
+Select TO_CHAR(255, 'XXX')
+From dual;
+
+-- 상품테이블에서 상품코드, 상품명, 매입가격, 소비자가격, 판매가격을 출력하시오
+-- 단, 가격은 천단위 구분 및 원화표시
+Select prod_id 상품코드, prod_name 상품명, 
+        TO_CHAR(prod_cost,'L9,999,999') 매입가격, 
+        TO_CHAR(prod_sale,'L9,999,999') 소비자가격, 
+        TO_CHAR(prod_price,'L9,999,999') 판매가격
+From prod;
+
+-- TO_NUMBER() =  숫자형식의 문자열을 숫자로 변환
+
+-- 회원테이블에서 '이쁜이'회원의 회원ID 2~4 문자열을 숫자형으로 치환한 후 10을 더하여 새로운 회원ID를 조합하시오.
+-- 별칭 = 회원ID, 조합회원ID
+-- 못함...
+
+Select mem_id 회원ID,
+        Substr(mem_id, 1, 2) ||
+        (Substr(mem_id, 3, 4) + 10)
+From member
+Where mem_name = '이쁜이';
+
+-- 상품테이블의 상품분류별 매입가격 평균 값
+-- AVG() = 그룹함수
+/*
+[규칙]!!
+일반 컬럼과 그룹 함수를 같이 사용할 경우에는
+꼭 Group By절을 넣어 주어여 합니다.
+그리고 Group By절에는 일반 컬럼이 모두 들어가야 합니다.
+*/
+Select prod_lgu "상품 분류",
+        ROUND(AVG(prod_cost), 2) "매입가격 평균"
+From prod
+Group By prod_lgu;
+
+Select ROUND(AVG(prod_cost), 2) "매입가격 평균"
+From prod;
+
+-- 상품테이블의 총 판매가격 평균 값을 구하시오,
+-- 별칭 = 상품판매가격평균
+Select ROUND(AVG(prod_sale), 2) "상품판매가격평균"
+From prod;
+
+-- 상품테이블의 상품분류별 판매가격 평균값
+Select prod_lgu,  
+        ROUND(AVG(prod_sale), 2) "상품판매가격평균"
+From prod
+Group By prod_lgu;
+
+Select prod_lgu,  
+        AVG(prod_sale) as avg_sale
+From prod
+Group By prod_lgu;
 
 
 
 
 
-                     

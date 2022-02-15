@@ -99,7 +99,7 @@ prod : 상품정보 / 거래처, 상품분류
 buyer : 거래처정보 
 member : 회원정보
 cart : 구매(장바구니)정보 / 회원, 상품
-buyprod : 임고상품정보 / 상품정보
+buyprod : 입고상품정보 / 상품정보
 remain : 재고수불정보
 */
 
@@ -242,6 +242,16 @@ Where prod_sale = 150000
     OR prod_sale = 330000
 Order By prod_id Asc;
 
+-- 강사님
+Select prod_name 상품명, prod_sale 판매가격
+From prod
+Where prod_sale IN (150000, 170000, 330000);
+
+-- 반대 개념으로 출력
+Select prod_name 상품명, prod_sale 판매가격
+From prod
+Where prod_sale NOT IN (150000, 170000, 330000);
+
 -- 회원 중에 아이디가 C001, F001, W001인 회원 조회
 -- 회원ID, 회원이름 조회
 -- 정렬은 주민번호 앞자리를 기준으로 내림차순
@@ -252,7 +262,11 @@ Where mem_id = 'c001'
     OR mem_id = 'w001'
 Order By mem_regno1 Desc;
 
-
+-- 상품 분류테이블에서 현재 상품테이블에 존재하는 분류만 검색
+-- 분류코드, 분류명
+Select lprod_gu 분류코드, lprod_nm 분류명
+From lprod
+Where lprod_gu IN (Select prod_lgu From prod);
 
 
 

@@ -372,7 +372,36 @@ Select prod_lgu,
 From prod
 Group By prod_lgu;
 
+-- COUNT(col/*) = 조회 범위 내 해당 컬럼들의 자료수
 
+-- 장바구니테이블의 회원별 COUNT집계 하시오.
+-- 별칭 = 회원ID, 자료수(DISTINCT), 자료수, 자료수(*)
+Select cart_member , COUNT(cart_member) as avg_member
+From cart
+Group By cart_member;
+
+/*
+[문제]
+구매수량의 전체평균 이상을 구매한 회원들의 아이디와 이름을 조회.
+*/
+-- 못 함.. 
+Select mem_id 회원ID, mem_name 회원명
+From member
+Where mem_id 
+    IN(Select cart_member From cart
+        Where cart_qty >= (
+            Select AVG(cart_qty) -- 원하는 쿼리를 밖에서 실행해보고 ()[괄호]를 이용해서 추가해보자..!!!!
+            From cart
+            )
+        )
+Order By mem_regno1 ASC;
+
+Select cart_member 회원ID, AVG(cart_qty) 평균
+From cart
+Group By cart_member;
+
+Select AVG(cart_qty) 평균
+From cart;
 
 
 

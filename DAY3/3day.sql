@@ -187,6 +187,122 @@ From member
 Group By SUBSTR(mem_add1, 1, 2), SUBSTR(mem_bir, 1, 2)
 Order By COUNT(mem_mileage) DESC;
  
+-- NULL처리
+-- NULL 값은 0, 1과 같은 특정한 값이 아니고 아무것도 없는 것을 의미
+
+-- NULL처리를 위해서 NULL을 추가
+-- 거래처 담당자 성씨가 '김'이면 NULL로 갱신
+UPDATE buyer SET  buyer_charger = NULL
+Where buyer_charger LIKE '김%';
+
+-- 거래처 담당자 성씨가 '성'이면 White Space로 갱신
+-- ''는 빈공백으로 인식
+-- 데이터는 없지만 메모리를 차지
+UPDATE buyer SET  buyer_charger = ''
+Where buyer_charger LIKE '성%';
+
+-- 확인
+-- 거래처 담당자 성씨가 '김'이면 NULL로 갱신되었으므로 조회가 되지 않는다.
+Select buyer_name 거래처, buyer_charger 담당자
+From buyer
+Where buyer_charger LIKE '김%';
+
+-- 거래처 담당자 성씨가 '성'이면 White Space로 갱신되었으므로 조회가 되지 않는다.
+Select buyer_name 거래처, buyer_charger 담당자
+From buyer
+Where buyer_charger LIKE '성%';
+
+-- NVL(,)
+-- IS NULL : Where절에서 사용 가능.
+-- NULLIF(,)
+
+--NULL을 이용 NULL값 비교
+Select buyer_name 거래처, buyer_charger 담당자
+From buyer
+Where buyer_charger = NULL;
+
+-- IS NULL을 이용 NULL값 비교
+Select buyer_name 거래처, buyer_charger 담당자
+From buyer
+Where buyer_charger IS NULL;
+
+Select buyer_name 거래처, buyer_charger 담당자
+From buyer
+Where buyer_charger IS NOT NULL;
+
+-- 해당컬럼이 NULL인 경우 대신할 문자나 숫자 치환
+-- NULL이 존재하는 상태로 조회
+Select buyer_name 거래처, buyer_charger 담당자
+From buyer;
+
+-- NVL을 이용 NULL값일 경우 '없다'로 치환
+Select buyer_name 거래처, NVL(buyer_charger, '없다') AS 담당자
+From buyer;
+
+-- 회원 마일리지에 100을 더한 수치를 검색하시오
+-- NVL 사용
+-- 별칭은 성명, 마일리지, 변경마일리지
+Select mem_name 성명, mem_mileage 마일리지, NVL(mem_mileage, 0) + '100' "변경마일리지"
+From member;
+
+-- 강사님
+Select mem_name 성명, mem_mileage 마일리지, mem_mileage + '100' "변경마일리지"
+From member;
+
+-- 회원마일리지가 있으면 '정상회원', NULL이면 '비정상회원'으로 검색하시오.
+-- NVL2 사용. 별칭 = 성명, 마일리지, 회원상태
+Select mem_name 성명, mem_mileage 마일리지, NVL2(mem_mileage, '정상회원', '비정상회원') "회원상태"
+From member;
+
+-- DECODE() = IF문과 같은 기능을 함
+Select DECODE(SUBSTR(prod_lgu, 1, 2),
+                    'P1', '컴퓨터/전자 제품',
+                    'P2', '의류',
+                    'P3', '잡화', '기타')
+From prod;
+
+-- DECODE('기준이 되는 값', '2', '3', ...'')
+-- '기준이 되는 값' 뒤부터 2개씩 묶어서 왼쪽에 있는 값이 기준 값이 '기준이 되는 값'과 같으면 오른쪽에 있는 값을 출력
+-- 마지막에 하나가 남으면 위의 조건이 다 아니면 출력 (else의 느낌)
+
+-- 상품분류중 앞의 두 글자가 'P1'이면 판매가의 10%로 인상하고 'P2'이면 판매가의 15%인상하고 나머지는 동일 판매가로 검색
+-- DECODE 함수 사용
+-- 별칭 = 상품명, 판매가, 변경판매가
+Select prod_name 상품명, 
+        prod_sale 판매가, 
+        DECODE(SUBSTR(prod_lgu, 1,2),
+                    'P1', prod_sale*1.10,
+                    'P2', prod_sale*1.15, prod_sale) AS "변경판매가"
+From prod;
+
+-- CASE WHEN THEN 
+-- ELSE END RESULT
+
+-- CASE WHEN THEN 
+-- ELSE END
+
+-- 회원정보테이블의 주민등록 뒷자리(7자리중 첫번째)에서 성별 구분을 검색
+-- CASE 구문 사용
+-- 별칭 = 회원명, 주민등록번호(주민1, 주민2), 성별
+Select mem_name 회원명, 
+        SUBSTR(mem_regno2,1,1) 주민등록번호, 
+        CASE WHEN SUBSTR(mem_regno2,1,1) = '1' THEN '남성'
+                WHEN SUBSTR(mem_regno2,1,1) = '2' THEN '여성' 
+                END "성별"   
+From member;
+
+Select mem_name 회원명, 
+        SUBSTR(mem_regno2,1,1) 주민등록번호, 
+        CASE WHEN SUBSTR(mem_regno2,1,1) = '1' THEN '남성'
+                ELSE '여성' 
+                END "성별"   
+From member;
+
+
+
+
+
+
 
 
 

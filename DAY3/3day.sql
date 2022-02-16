@@ -116,6 +116,8 @@ From cart
 정렬은 년도를 기준으로 내림차순
 */
 -- 데이터를 조회할때 1건이 나오든 하나도 안 나오든 논리적으로 쿼리를 구성하면 된다. (쫄지말기)
+-- Group 함수 = SUM, AVG, MAX, MIN 함수이다.
+-- 그룹함수 외의 일반함수가 Select에 있으면 Group By를 이용해서 일반함수를 그룹화 해줘야한다.
 Select SUBSTR(cart_no, 1,4) 년도, SUM(cart_qty) 판매된상품개수, AVG(cart_qty) 평균구매수량
 From cart
 Group By SUBSTR(cart_no, 1,4)
@@ -131,5 +133,61 @@ Order By SUBSTR(cart_no, 1,6) DESC
 
 Select SUBSTR(cart_no, 1,6)
 From cart;
+
+/*
+[문제]
+구매정보에서 년도별, 상품분류코드별로 상품의 개수(COUNT)를 조회
+정렬은 년도를 기준으로 내림차순
+*/
+Select SUBSTR(cart_no, 1, 4) 년도, SUBSTR(cart_prod, 1, 4) 상품분류코드, COUNT(cart_qty) 상품개수
+From cart
+Group By SUBSTR(cart_no, 1, 4), SUBSTR(cart_prod, 1, 4)
+Order By SUBSTR(cart_prod, 1, 4) DESC;
+
+-- 회원테이블의 회원전체의 마일리지 평균, 마일리지 합계, 최고 마일리지, 최소마일리지, 인원수를 검색하시오
+-- 별칭 = 마일리지평균, 마일리지합계, 최고마일리지, 최소마일리지, 인원수
+Select ROUND(AVG(mem_mileage), 2) AS 마일리지평균, 
+        SUM(mem_mileage) 마일리지합계, 
+        MAX(mem_mileage) 최고마일리지, 
+        MIN(mem_mileage) 최소마일리지, 
+        COUNT(mem_id) 인원수
+From member;
+
+/*
+[문제]
+상품테이블에서 상품분류별 판매가 전체의 평균, 합계, 최고값, 최저값, 자료수를 검색
+별칭 = 평균, 합계, 최고값, 최저값, 자료수
+자료수가 20개 이상인것 조회
+*/
+Select prod_lgu 상품분류, 
+        ROUND(AVG(prod_sale), 2) AS 평균, 
+        SUM(prod_sale) 합계,
+        MAX(prod_sale) 최고값,
+        MIN(prod_sale) 최소값,
+        COUNT(prod_sale) 자료수
+From prod
+Group By prod_lgu
+HAVING COUNT(prod_sale) >= 20 -- 그룹화를 하고/그룹함수에 조건을 주고 싶을 때는 HAVING() 함수 사용
+Order By COUNT(prod_sale) DESC;
+
+-- Where 절 : 일반조건만 사용
+-- HAVING 절 : 그룹조건만 사용 (그룹함수를 사용한 조건처리)
+
+-- 회원테이블에서 지역(주소1의 2자리), 생일년도별로 마일리지평균, 합계, 최고, 최소, 자료수를 검색
+-- 별칭 = 지역, 생일연도, 마일리지평균,  합계, 최고, 최소, 자료수
+-- 자료수 내림차순으로
+Select SUBSTR(mem_add1, 1, 2) 지역,
+        SUBSTR(mem_bir, 1, 2) 생일연도,
+        ROUND(AVG(mem_mileage), 2) 마일리지평균,
+        SUM(mem_mileage) 마일리지합계,
+        MAX(mem_mileage) 최고마일리지,
+        MIN(mem_mileage) 최소마일리지,
+        COUNT(mem_mileage) 자료수
+From member
+Group By SUBSTR(mem_add1, 1, 2), SUBSTR(mem_bir, 1, 2)
+Order By COUNT(mem_mileage) DESC;
+ 
+
+
 
 

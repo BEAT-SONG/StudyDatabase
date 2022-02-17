@@ -7,7 +7,7 @@ Select mem_id 회원ID, mem_name 회원이름, ROUND(AVG(mem_mileage),2) AS "회원마일�
 From member
 Where mem_memorial = '결혼기념일'
         AND EXTRACT(MONTH FROM mem_memorialday) != '8' 
-        AND mem_mileage < (Select ROUND(AVG(mem_mileage),3) From member)
+        AND mem_mileage < (Select ROUND(AVG(mem_mileage),2) From member)
             AND mem_id 
                 IN (Select cart_member From cart
                     Where cart_no LIKE '%1'
@@ -21,6 +21,53 @@ Where mem_memorial = '결혼기념일'
                                                          AND buyer_lgu LIKE 'P1%'))))
 Group By mem_id, mem_name ;
 
+Select mem_id 회원ID, mem_name 회원이름, ROUND(AVG(mem_mileage),2) AS "회원마일리지"
+From member
+Where mem_memorial = '결혼기념일'
+        AND EXTRACT(MONTH FROM mem_memorialday) != '8' 
+        AND mem_mileage < (Select ROUND(AVG(mem_mileage),2) From member)
+            AND mem_id 
+                IN (Select cart_member From cart
+                    Where cart_no LIKE '%1'
+                            AND cart_prod 
+                             IN(Select prod_id From prod
+                                  Where prod_lgu
+                                        IN(Select lprod_gu From lprod
+                                         Where lprod_gu
+                                            IN(Select buyer_lgu From buyer
+                                            Where SUBSTR(buyer_add1, 1,2) = '인천'
+                                                         AND buyer_lgu LIKE 'P1%'))))
+Group By mem_id, mem_name ;
+
+Select mem_id 회원ID, mem_name 회원이름, ROUND(AVG(mem_mileage),2) AS "회원마일리지"
+From member, cart, prod, buyer, lprod
+    Where mem_memorial = '결혼기념일'
+        AND EXTRACT(MONTH FROM mem_memorialday) != '8'
+        AND mem_mileage < (Select ROUND(AVG(mem_mileage),2) From member)
+            AND mem_id = cart_member
+            AND cart_no LIKE '%1'
+                AND cart_prod = prod_id
+                    AND prod_lgu = lprod_gu
+                        AND lprod_gu = buyer_lgu
+                        AND SUBSTR(buyer_add1, 1,2) = '인천'
+                         AND buyer_lgu LIKE 'P1%'
+Group By mem_id, mem_name ; -- 2명
+            
+        
+Select mem_id 회원ID, mem_name 회원이름, ROUND(AVG(mem_mileage),2) AS "회원마일리지"
+From member, cart, prod, buyer, lprod
+    Where mem_memorial = '결혼기념일'
+        AND EXTRACT(MONTH FROM mem_memorialday) != '8'
+        AND mem_mileage < (Select ROUND(AVG(mem_mileage),2) From member)
+            AND mem_id = cart_member
+            AND cart_no LIKE '%1'
+                AND cart_prod = prod_id
+                    AND prod_buyer = buyer_id
+                        AND SUBSTR(buyer_add1, 1,2) = '인천'
+                         AND buyer_lgu LIKE 'P1%'
+Group By mem_id, mem_name ; -- 0명
+
+-- **************************************************************************************
 Select prod_properstock, COUNT(prod_properstock)
 From prod
 Group By prod_properstock;

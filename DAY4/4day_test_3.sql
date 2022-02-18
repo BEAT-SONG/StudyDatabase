@@ -97,6 +97,24 @@ Where buyer_id
                                 AND mem_job = '주부'
                                 AND mem_add1 LIKE '%대전%')));
                                 
+SELECT buyer_bank AS "은행명", 
+           buyer_bankno AS "계좌번호"
+FROM buyer            
+            WHERE buyer_id IN(
+                                        SELECT prod_buyer
+                                        FROM prod
+                                        WHERE prod_id IN(
+                                                            SELECT cart_prod
+                                                            FROM cart
+                                                            WHERE cart_member IN(
+                                                                                SELECT mem_id 
+                                                                                FROM member
+                                                                                WHERE mem_add1 like '%대전%' 
+                                                                                AND substr(mem_regno1,1,2) >= '73'
+                                                                                AND mem_job = '주부')                         
+                                                             AND substr(cart_no,1,6) = '200504')
+                                                       );
+                                
 
 -- 송재성
 SELECT

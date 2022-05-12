@@ -55,6 +55,15 @@
 - ELSE END
 
 ### 4일차
-- 
 
+|T/F 확인|
+|:--:|
+|EXISTS|
 
+- TAGBLE JOIN
+    - Cross join
+    - Inner join
+    - Outer join = left/right
+
+### 5일차
+- 응용. 마무리 
